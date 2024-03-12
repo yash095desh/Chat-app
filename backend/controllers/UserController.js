@@ -31,3 +31,24 @@ export const registerUser = asynchandler(async(req,res)=>{
         ...rest,token:genratetoken(user._id)
     })
 })
+
+export const loginUser = asynchandler(async(req,res)=>{
+   const {email,password} = req.body
+
+   if(!email || !password){
+    res.status(401)
+    throw new Error('User Credentials Not Found')
+   }
+   const user = await User.findOne({email})
+   const ispassword = bcryptjs.compareSync(password,user.password)
+   if(!ispassword){
+    res.status(400)
+    throw new Error('Invalid Email or Password')
+   }
+   
+   const {password : pass ,...rest} = user._doc 
+
+    res.status(200).send({
+        ...rest,token:genratetoken(user._id)
+    })
+})
